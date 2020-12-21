@@ -53,24 +53,33 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
 ```json
 { // Example
     "Configurations":{
-        "NameSpace":"Base", 								//	同C++的namespace,若不想具有namespace留空即可.
-        "Registered":[										//	类信息注册.
+        // 同C++的namespace,若不想具有namespace留空即可.
+        "NameSpace":"Base",
+        "Registered":[// 类信息注册.
             {
-                "Id":"config", 								// 类Id标识(任意名),用于Initialize中使用.
-                "Class":"Magic::Config", 					// 类名,如果有namespace,则需加上即可.
-                "IncludePath": "Include/Core/Config.h",		// 类所在的文件路径.
-                "Interface":"",								// 继承的接口类,通常需要类似工厂模式的时候才使用.
-                "Dependencies":[],							// 依赖的其他类的类名.
-                "FunctionPropertys":["addConfigFile"]		// 需要注册的属性函数.
+                // 类Id标识(任意名),用于Initialize中使用.
+                "Id":"config",
+                // 类名,如果有namespace,则需加上即可.
+                "Class":"Magic::Config",
+                // 类所在的文件路径.
+                "IncludePath": "Include/Core/Config.h",
+                // 继承的接口类,通常需要类似工厂模式的时候才使用.
+                "Interface":"",
+                // 依赖的其他类的类名.
+                "Dependencies":[],
+                // 需要注册的属性函数.
+                "FunctionPropertys":["addConfigFile"]
             },
             {
                 "Id":"configFile",
-                "Class":"Magic::ConfigFile",				// 与Magic::Config同文件,则不需要在此定义IncludePath
+                // 与Magic::Config同文件,则不需要在此定义IncludePath
+                "Class":"Magic::ConfigFile",
                 "FunctionPropertys":["addFormatter"]
             },
             {
                 "Id":"iniConfigFormmater",
-                "Class":"Magic::InIConfigFormatter",		// 与Magic::Config同文件,则不需要在此定义IncludePath
+                // 与Magic::Config同文件,则不需要在此定义IncludePath
+                "Class":"Magic::InIConfigFormatter",
                 "Interface":"Magic::IConfigFormatter"
             },
             {
@@ -88,33 +97,41 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
                 "FunctionPropertys":[]
             }
         ],
-        "Initialize":[										// 初始化
+        "Initialize":[// 初始化
             {
-                "Id":"configFile", 							// 类Id标识应与上方Registered中一致.
-                "FunctionPropertys":["setFilePath"],		// 需要初始化的函数.
+                // 类Id标识应与上方Registered中一致.
+                "Id":"configFile",
+                // 需要初始化的函数.
+                "FunctionPropertys":["setFilePath"],
                 "FunctionArguments":{
-                    "setFilePath" : ["\"./config.conf\""]	// 函数中对应的 RAW Arguments.
+                    // 函数中对应的 RAW Arguments.
+                    "setFilePath" : ["\"./config.conf\""]
                 }
             },
             {
                 "Id":"logger",
-                "Loop":true,								// Loop 循环加入接口类对象
-                "Callee":"Magic::ILogAppender",				// 接口类类型
-                "FunctionPropertys":["addILogAppender"],	// 接口类对象添加函数.
+                // Loop 循环加入接口类对象
+                "Loop":true,
+                // 接口类类型
+                "Callee":"Magic::ILogAppender",
+                // 接口类对象添加函数.
+                "FunctionPropertys":["addILogAppender"],	
                 "FunctionArguments":{}
             }
         ],
-        "Constructor":{										// 构造函数定义
-            "Name":"Initialize",							// 暴露给main函数中调用名.
-            "WithParameter": false							// 是否需要自定义注册参数.
+        "Constructor":{// 构造函数定义
+            // 暴露给main函数中调用名.
+            "Name":"Initialize",
+            // 是否需要自定义注册参数.
+            "WithParameter": false
         }
     }
 }
 ```
 
-> Example: [Magic/Example](Magic/Example)目录.
+> Example: [Magic/Examples](https://github.com/INotfound/Magic/tree/master/Examples)目录.
 
-- 超简单的实例，[Base](Magic/Example/Base)项目.
+- 超简单的实例，[Base](https://github.com/INotfound/Magic/tree/master/Examples/Base)项目.
 
 ```c++
 #include "Base.h"
