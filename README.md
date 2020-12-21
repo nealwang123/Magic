@@ -50,7 +50,7 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
 
 > 配置文件：(可使用多个配置文件)
 
-```json
+```
 { // Example
     "Configurations":{
         // 同C++的namespace,若不想具有namespace留空即可.
