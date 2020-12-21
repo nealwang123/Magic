@@ -1,94 +1,136 @@
-<!--
- * @File: README.md
- * @Author: INotFound
- * @Date: 2020-03-16 00:33:44
- * @LastEditTime : 2020-05-09 12:54:52
- -->
-# Magic服务端基础框架
-* Magic 是一个能进行快速开发,且基于ASIO网络框架,拥有丰富的基础组件(日志\插件\网络\线程\数据库等)跨平台(Win And Linux)框架库。
-## 快速示例
-* 本库将智能指针名称进行了重定义.
-```
-    /// 文件 Magic/Include/Magic/Core.h 中
-    #define Safe std::unique_ptr
-    #define Share std::shared_ptr
-```
-* 在Main函数的第一行调用Magic的初始化方法,进行Config、Log相关组件的初始化工作.
-```
-    /// "Build_Test" 是项目名称.
-    Magic::Init("Build_Test");
-```
-* Config配置组件的食用方法,目前只支持基础类型.
-```
-    /// 可自定义配置生成Json 和 ini格式的文件.具体常考 (Magic/Source/Magic.cpp) 文件。
-    /// 未修改生成的配置文件的情况下,会使用at函数的第二个参数作为默认值.
-    uint64_t number = Magic::Config::GetInstance()->at<uint64_t>("number", 24);
-```
-* Log日志组件的食用方法.
-```
-    /// 可自定义配置生成Html格式日志文件和普通日志文件.
-    /// 可通过Magic::LogLevel枚举类调整日志输出等级.
-    MAGIC_DEBUG() << "hello world";
-```
-* Plugin插件组件的食用方法.
-```
-    /// 详见以下两文件 
-    -> Examples/Test_Plugin.cpp
-    -> Examples/Test_PluginLib.cpp
-```
-* 简单的Web服务器的食用方法.
-```
-    /// 详见以下文件 
-    -> Examples/Test_Server.cpp
-```
-## 如何编译
-### 编译器的支持
-* 只需支持C++11的编译器.
-### 需要添加依赖的第三方库
-* 需初始化更新Git的子仓库(Asio、zlib、RapidJson).
-```
-    /// 在此Git仓库的根路径下调用以下命令。
-    git submodule update --init
-```
-* 加密库 OpenSSL ,数据库 MySql ,压缩库 zlib .
-## 引用方法之一
-* 推荐使用CMake进行构建.
-* 配置MySql | OpenSSL (Linux可直接通过包管理器安装,Win需要下载编译安装) .
-```
-    //修改本库中的Library.cmake，将其变量指向你第三方库编译后的地址 (Linux无需如此).
-########################################################################################
-    #   Include
-    set(OPENSSL_INCLUDE "C:\\Users\\magic\\Desktop\\openssl\\ssl\\include")
-    set(MYSQL_INCLUDE   "C:\\Program Files (x86)\\MySQL\\MySQL Connector C 6.1\\include")
-    #   Library
-    set(OPENSSL_LIBRARY "C:\\Users\\magic\\Desktop\\openssl\\ssl\\lib")
-    set(MYSQL_LIBRARY   "C:\\Program Files (x86)\\MySQL\\MySQL Connector C 6.1\\lib")
-########################################################################################
-```
-* 把以下代码添加进你的项目文件CMakeLists.txt中进行后即可进行构建编译.
-```
-########################################################################################
-set(MAGIC ../Magic)                         #将MAGIC变量指向本库地址即可
-include(${MAGIC}/Library.cmake)
-add_subdirectory(${MAGIC} Magic.out)
+# Magic
+
+## 简介
+
+> ​		Use Standard C++ 11
+
+> ​		基于IoC的快速开发库(C++ Rapid development library based on Inversion of Control),配合CMake构建套件开发.
+
+## 特点
+
+- 快速开发
+  - 高内聚,低耦合.
+  - 超强的通用性以及高度跨平台.
+  - 实现模块化开发方式便于协作开发.
+  - 基于 IoC `(Inversion of Control)`的方式对每个类进行托管以及自动创建.
+- 模块配置
+  - 功能模块可高度重用，方便扩展以及维护.
+  - 使用Json格式配置文件`(.magic)`对功能模块进行划分.
+- 非侵入式
+  - 代码移植度高.
+  - 无任何侵入式代码.
+- 高度解耦
+  - 继承于IoC的主要特点.
+
+## 使用方式
+
+> CMakeLists.txt
+
+```cmake
+set(MAGIC /home/magic/WorkSpace/Magic)
 include_directories(
-	${MAGIC}/Include			#Magic
-	${MAGIC}/ThirdParty/Gzip		#Gzip
-	${MAGIC}/ThirdParty/Asio/asio/include	#ASIO
-	${MAGIC}/ThirdParty/RapidJSON/include	#RapidJSON
+    ${MAGIC}
+	${MAGIC}/Include
+    ${PROJECT_SOURCE_DIR}
+    ${MAGIC}/ThirdParty/Asio/Include
+    ${MAGIC}/ThirdParty/RapidJSON/Include
 )
-########################################################################################
+link_directories(
+    ${MAGIC}/Lib
+)
+link_libraries(Magic)
+include(../../Magic.cmake)
+#参数[1]:本库路径
+#参数[2]:导出的头文件名
+#参数[MGC]: 本库中的单模块(Module) or 多模块(Modules)
+#参数[SRC]: 自定义的模块(Module) or 多模块(Modules)
+GENEX(${MAGIC} Base MGC Magic SRC Base)
+
 ```
+
+> 配置文件：(可使用多个配置文件)
+
+```json
+{ // Example
+    "Configurations":{
+        "NameSpace":"Base", 								//	同C++的namespace,若不想具有namespace留空即可.
+        "Registered":[										//	类信息注册.
+            {
+                "Id":"config", 								// 类Id标识(任意名),用于Initialize中使用.
+                "Class":"Magic::Config", 					// 类名,如果有namespace,则需加上即可.
+                "IncludePath": "Include/Core/Config.h",		// 类所在的文件路径.
+                "Interface":"",								// 继承的接口类,通常需要类似工厂模式的时候才使用.
+                "Dependencies":[],							// 依赖的其他类的类名.
+                "FunctionPropertys":["addConfigFile"]		// 需要注册的属性函数.
+            },
+            {
+                "Id":"configFile",
+                "Class":"Magic::ConfigFile",				// 与Magic::Config同文件,则不需要在此定义IncludePath
+                "FunctionPropertys":["addFormatter"]
+            },
+            {
+                "Id":"iniConfigFormmater",
+                "Class":"Magic::InIConfigFormatter",		// 与Magic::Config同文件,则不需要在此定义IncludePath
+                "Interface":"Magic::IConfigFormatter"
+            },
+            {
+                "Id":"logger",
+                "Class":"Magic::Logger",
+                "IncludePath": "Include/Core/Logger.h",
+                "Dependencies":["Magic::Config"],
+                "FunctionPropertys":[]
+            },
+            {
+                "Id":"stdOut",
+                "Class":"Magic::StdOutLogAppender",
+                "Interface":"Magic::ILogAppender",
+                "Dependencies":[],
+                "FunctionPropertys":[]
+            }
+        ],
+        "Initialize":[										// 初始化
+            {
+                "Id":"configFile", 							// 类Id标识应与上方Registered中一致.
+                "FunctionPropertys":["setFilePath"],		// 需要初始化的函数.
+                "FunctionArguments":{
+                    "setFilePath" : ["\"./config.conf\""]	// 函数中对应的 RAW Arguments.
+                }
+            },
+            {
+                "Id":"logger",
+                "Loop":true,								// Loop 循环加入接口类对象
+                "Callee":"Magic::ILogAppender",				// 接口类类型
+                "FunctionPropertys":["addILogAppender"],	// 接口类对象添加函数.
+                "FunctionArguments":{}
+            }
+        ],
+        "Constructor":{										// 构造函数定义
+            "Name":"Initialize",							// 暴露给main函数中调用名.
+            "WithParameter": false							// 是否需要自定义注册参数.
+        }
+    }
+}
+```
+
+> Example: [Magic/Example](Magic/Example)目录.
+
+- 超简单的实例，[Base](Magic/Example/Base)项目.
+
+```c++
+#include "Base.h"
+
+int main(){
+    Base::Initialize();
+    MAGIC_DEBUG() << "hello world";
+    return EXIT_SUCCESS;
+}
+```
+
 ## 其他
-* 注意:  
-    在Mingw-w64编译器下,会无法打印调用栈信息解决办法:  
-    &emsp;1.https://github.com/rainers/cv2pdb 获取cv2pdb.exe工具  
-    &emsp;2.需在 Visual Studio 控制台中运行该工具(必要的条件)  
-    &emsp;3.用法: cv2pdb.exe 项目.exe
-* C++ 个人代码规范:  
-    链接：  
-    &emsp;http://note.youdao.com/noteshare?id=0975fd51d320c1cd7bc0cbaab6d39e59&sub=AC10B1CBC6744F92B2B8A3F26DC47918
-    
-## 联系方式
-* QQ 614199451  
-* QQ群 451405524
+
+- [C++ 个人代码规范](http://note.youdao.com/noteshare?id=0975fd51d320c1cd7bc0cbaab6d39e59&sub=AC10B1CBC6744F92B2B8A3F26DC47918)
+
+## 作者联系方式
+
+- QQ: [614199451](http://wpa.qq.com/msgrd?v=3&uin=614199451&site=qq&menu=yes)
+- QQ群: [451405524](https://qm.qq.com/cgi-bin/qm/qr?k=qsjCo88_9j8cPCwkgzRzaIKfCyXU98VH&jump_from=webapi)
