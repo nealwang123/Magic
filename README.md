@@ -127,7 +127,7 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
     /// 支持自定义扩展.
     /// 目前只支持基础类型和std::string.
     /// 未修改生成的配置文件的情况下,会使用at函数的第二个参数作为默认值.
-    uint64_t number = Magic::Config::GetInstance()->at<uint64_t>("number", 24);
+    uint64_t number = config:->at<uint64_t>("number", 24);
 ```
 >Log日志组件的使用方法.
 ```c++
