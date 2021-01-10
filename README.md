@@ -4,7 +4,6 @@
 
 >主分支中Magic的版本[v1.0.0]现已停止开发.如需要查看此版本的README请切换分支至v1.0.0
 
-
 ## 简介
 
 > ​		Use Standard C++ 11
@@ -29,94 +28,10 @@
 
 - 代码**移植度**高.
 - **无任何侵入式代码**.
-
 - 高度解耦
-
-### IoC  特点
-
-```mermaid
-graph TD
-A[依赖倒置原则\Dependency Inversion Principle]
-B[控制反转容器\Inversion of Control Container]
-C[依赖注入\Dependency Injection]
-A ---> B
-B ---> C
-
-```
-
-## 示例
-
-### 本库示例
-
-> CMakeLists.txt
-
-```cmake
-set(MAGIC /home/magic/WorkSpace/Magic)
-include_directories(
-    ${MAGIC}
-	${MAGIC}/Include
-    ${PROJECT_SOURCE_DIR}
-    ${MAGIC}/ThirdParty/Asio/Include
-    ${MAGIC}/ThirdParty/RapidJSON/Include
-)
-link_directories(
-    ${MAGIC}/Lib
-)
-link_libraries(Magic)
-include(${MAGIC}/Magic.cmake)
-
-#参数[1]:本库路径
-#参数[2]:导出的头文件名
-#参数[MGC]: 本库中的单模块(Module) or 多模块(Modules)
-#参数[SRC]: 自定义的模块(Module) or 多模块(Modules)
-GENEX(${MAGIC} Base MGC Magic SRC Base)
-
-```
-
-> 配置文件：[Magic模块](Magic.cmake)(可使用多个配置文件)
-```
-{ // 日志以及配置模块示例
-    "Configurations":{
-        "NameSpace":"Magic",// 同C++的namespace,若不想具有namespace留空即可.
-        "Registered":[// 类信息注册.
-            {
-                "Id":"config",                          // 类Id标识(任意名),用于Initialize中使用.
-                "Class":"Magic::Config",                // 类名,如果有namespace,则需加上即可.
-                "IncludePath": "Include/Core/Config.h", // 类所在的文件路径.
-                "Interface":"",                         // 继承的接口类,通常需要类似工厂模式的时候才使用.
-                "Dependencies":[],                      // 依赖的其他类的类名.
-                "FunctionPropertys":["addConfigFile"]   // 需要注册的属性函数.
-            },
-            {
-                "Id":"configFile", // 与Magic::Config同文件,则不需要在此定义IncludePath
-                "Class":"Magic::ConfigFile",
-                "FunctionPropertys":["addFormatter"]
-            },
-            ......
-        ],
-        "Initialize":[// 初始化
-            {
-                "Id":"configFile",                          // 类Id标识应与上方Registered中一致.
-                "FunctionPropertys":["setFilePath"],        // 需要初始化的函数.
-                "FunctionArguments":{
-                    "setFilePath" : ["\"./config.conf\""]   // 函数中对应的 RAW Arguments.
-                }
-            },
-            {
-                "Id":"logger",
-                "Loop":true,                                // Loop 循环加入接口类对象
-                "Callee":"Magic::ILogAppender",             // 接口类类型
-                "FunctionPropertys":["addILogAppender"],    // 接口类对象添加函数.	
-                "FunctionArguments":{}
-            }
-        ],
-        "Constructor":{// 构造函数定义
-            "Name":"Initialize",    // 暴露给main函数中调用名.
-            "WithParameter": false  // 是否需要自定义注册参数.
-        }
-    }
-}
-```
+### [Go to 安装/使用方法](/)
+### 本库特性
+> 组件: ***类Log4j日志***、***线程***、***NetWork网路、Http协议***、***Web服务***、***数据库***、***高性能网络/数据库连接池***、***高性能TimingWheel定时轮***等等
 
 > 本库将智能指针名称进行了重定义.
 ```c++
@@ -127,7 +42,7 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
     /// 支持自定义扩展.
     /// 目前只支持基础类型和std::string.
     /// 未修改生成的配置文件的情况下,会使用at函数的第二个参数作为默认值.
-    uint64_t number = config:->at<uint64_t>("number", 24);
+    uint64_t number = Magic::Config::GetInstance()->at<uint64_t>("number", 24);
 ```
 >Log日志组件的使用方法.
 ```c++
@@ -140,82 +55,7 @@ GENEX(${MAGIC} Base MGC Magic SRC Base)
     MAGIC_ERROR() << "hello world";
     MAGIC_FATAL() << "hello world";
 ```
-### Other示例
-
-> 目录位置:[Magic/Examples](https://github.com/INotfound/Magic/tree/master/Examples)
-
-#### 简单的[Base](https://github.com/INotfound/Magic/tree/master/Examples/Base)示例
-
-> CMakeLists.txt 引用Magic模块
-
-```cmake
-    GENEX(${MAGIC} Base MGC Magic SRC ...)
-```
-```c++
-#include "Base.h"
-
-int main(){
-    Base::Initialize();
-    MAGIC_DEBUG() << "hello world";
-    return EXIT_SUCCESS;
-}
-```
-#### WebServer示例
-
-> TestSevlet.h
-```c++
-#pragma once
-#include <Magic>
-
-namespace Web{
-    using namespace Magic::NetWork;
-    /// 使用Magic::NetWork::Http::IHttpServlet进行Servlet注册.
-    class TestServlet :public Http::IHttpServlet{
-    public:
-        TestServlet()
-            :Http::IHttpServlet("",Http::HttpServletType::Deafult){
-        }
-        bool handle(const Safe<Http::HttpRequest>& request,const Safe<Http::HttpResponse>& response) override{
-        }
-    };
-}
-```
-> main 函数
-```c++
-#include "Web.h"
-
-int main(){
-    Web::Initialize();
-    return EXIT_SUCCESS;
-}
-```
-> 自定义模块(Servlet.magic)
-```json
-{
-    "Configurations":{
-        "NameSpace":"Web",
-        "Registered":[
-            {
-                "Id":"testSevlet",
-                "Class":"Web::TestServlet",
-                "IncludePath": "TestSevlet.h",
-                "Interface":"Magic::NetWork::Http::IHttpServlet",
-                "Dependencies":[],
-                "FunctionPropertys":[]
-            }
-        ],
-        "Initialize":[],
-        "Constructor":{
-            "Name":"Initialize",
-            "WithParameter": false
-        }
-    }
-}
-```
-> CMakeLists.txt
-```cmake
-    GENEX(${MAGIC} Web MGC Magic WebServer SRC Servlet)
-```
+.....
 ## 其他
 
 ### 代码规范/联系方式
