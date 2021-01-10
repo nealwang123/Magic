@@ -1,26 +1,26 @@
 <!--
  * @Author: INotFound
  * @Date: 2021-01-10 14:08:44
- * @LastEditTime: 2021-01-10 15:29:11
+ * @LastEditTime: 2021-01-10 15:35:42
 -->
 ## Guide
 ### 安装
 > 只需支持C++11的编译器以及CMake构建工具编译即可.
 - Linux
     1. Gnu构建套件 (跳转在库路径中)
-        1. mkdir build && cd build && cmake ../. && make && make install
+        1. ***mkdir build && cd build && cmake ../. && make && make install***
     2. Ninja构建套件 (推荐.跳转在库路径中)
-        1. mkdir build && cd build && cmake -GNinja ../. && ninja && ninja install
+        1. ***mkdir build && cd build && cmake -GNinja ../. && ninja && ninja install***
 - Win
     - VS 20XX
-        - cmake -G "Visual Studio 15 2017" // or Visual Studio xx 20xx
+        - ***cmake -G "Visual Studio 15 2017" // or Visual Studio xx 20xx***
 ### 使用方法
 1. 使用本库工具 ***Create***
     1. 创建项目文件目录名,跳转项目文件目录中
-    2. 使用Create Test 创建项目模板 ***Test*** 项目名
-    3. 当前目录会生成 CMakeLists.txt Main.cpp Test.magic 三个文件
+    2. 使用Create ***Test*** 创建项目模板 ***Test*** 项目名
+    3. 当前目录会生成 ***CMakeLists.txt Main.cpp Test.magic***三个文件
 
-2. 打开***Test***项目文件夹中CMakeLists.txt文件.
+2. 打开***Test***项目文件夹中***CMakeLists.txt***文件.
     1. 设置Magic库路径, set(MAGIC ***/home/magic/Magic***) Magic库文件路径
 ```cmake
 #Please Add The Directory Path Of The Magic Library.
@@ -50,7 +50,7 @@ include(${MAGIC}/Magic.cmake)
 #参数[SRC]: 自定义的单模块(Module) or 多模块(Modules)
 GENEX(${MAGIC} Test MGC Magic SRC Test)
 ```
-3. 打开Test.magic配置文件
+3. 打开***Test.magic***配置文件
 ```jsonc
 {
     "Configurations":{
@@ -81,9 +81,8 @@ GENEX(${MAGIC} Test MGC Magic SRC Test)
     }
 }
 ```
-4.  跳转build目录中 调用 ***cmake ../.*** Or ***cmake ../. -Gxxx***
-    1.  打开Main.cpp源文件
-    
+4.  跳转build目录中 调用 ***cmake ../.*** OR ***cmake ../. -Gxxx***
+    1.  打开***Main.cpp***源文件
 ```c++
 #include "Test.h" //添加头文件
 
@@ -92,9 +91,9 @@ int main(){
     return EXIT_SUCCESS;
 }
 ```
-5. 编译即可
+5. ***编译即可***
 ### 本库示例
-> 配置文件：[Magic模块](Magic.cmake)(可使用多个配置文件)
+> 配置文件：[***Magic模块***](Magic.cmake)(可使用多个配置文件)
 ```jsonc
 {                                                           // 日志以及配置模块示例
     "Configurations":{
@@ -141,7 +140,7 @@ int main(){
 ### Other示例
 > 目录位置:[Magic/Examples](https://github.com/INotfound/Magic/tree/master/Examples)
 
-#### [Base](https://github.com/INotfound/Magic/tree/master/Examples/Base)示例
+#### [***Base***](https://github.com/INotfound/Magic/tree/master/Examples/Base)示例
 
 > CMakeLists.txt 引用Magic模块
 
@@ -157,8 +156,8 @@ int main(){
     return EXIT_SUCCESS;
 }
 ```
-#### [WebServer](https://github.com/INotfound/Magic/tree/master/Examples/Base)示例
-> Main.cpp
+#### [***WebServer***](https://github.com/INotfound/Magic/tree/master/Examples/Base)示例
+> ***Main.cpp***
 ```c++
 #include "Web.h"
 
@@ -167,7 +166,7 @@ int main(){
     return EXIT_SUCCESS;
 }
 ```
-> Servlet.magic
+> ***Servlet.magic***
 ```json
 {
     "Configurations":{
@@ -190,7 +189,7 @@ int main(){
     }
 }
 ```
-> TestSevlet.h
+> ***TestSevlet.h***
 ```c++
 #pragma once
 #include <Magic>
@@ -203,7 +202,7 @@ namespace Web{
     };
 }
 ```
-> TestSevlet.cpp
+> ***TestSevlet.cpp***
 ```c++
 #include "TestSevlet.h"
 
@@ -225,7 +224,7 @@ namespace Web{
     }
 }
 ```
-> CMakeLists.txt
+> ***CMakeLists.txt***
 ```cmake
     GENEX(${MAGIC} Web MGC Magic WebServer SRC Servlet)
 ```
