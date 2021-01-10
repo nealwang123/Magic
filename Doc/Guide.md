@@ -1,7 +1,7 @@
 <!--
  * @Author: INotFound
  * @Date: 2021-01-10 14:08:44
- * @LastEditTime: 2021-01-10 14:59:08
+ * @LastEditTime: 2021-01-10 15:29:11
 -->
 ## Guide
 ### 安装
@@ -81,8 +81,9 @@ GENEX(${MAGIC} Test MGC Magic SRC Test)
     }
 }
 ```
-4. 打开Main.cpp源文件
-
+4.  跳转build目录中 调用 ***cmake ../.*** Or ***cmake ../. -Gxxx***
+    1.  打开Main.cpp源文件
+    
 ```c++
 #include "Test.h" //添加头文件
 
@@ -90,8 +91,8 @@ int main(){
     Test::Initialize(); //添加初始化代码. [Configurations.NameSpace]::[Constructor.Name]命名设定
     return EXIT_SUCCESS;
 }
-
 ```
+5. 编译即可
 ### 本库示例
 > 配置文件：[Magic模块](Magic.cmake)(可使用多个配置文件)
 ```jsonc
